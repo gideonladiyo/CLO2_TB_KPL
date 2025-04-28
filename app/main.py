@@ -11,3 +11,8 @@ print(f"After shipping: {current_state}")
 
 current_state = change_order_state(current_state, OrderTrigger.DELIVER)
 print(f"After delivering: {current_state}")
+
+from config import settings
+
+print(settings.app_name)
+print(settings.debug)
