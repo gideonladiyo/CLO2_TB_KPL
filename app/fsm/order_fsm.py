@@ -24,6 +24,21 @@ order_transitions = {
 }
 
 def change_order_state(current_state, trigger):
-    if current_state in order_transitions and trigger in order_transitions[current_state]:
+    if isinstance(current_state, str):
+        try:
+            current_state = OrderState[current_state]
+        except ValueError:
+            raise ValueError(f"Invalid current state: {current_state}")
+
+    if isinstance(trigger, str):
+        try:
+            trigger = OrderTrigger[trigger]
+        except ValueError:
+            raise ValueError(f"Invalid trigger: {trigger}")
+
+    if (
+        current_state in order_transitions
+        and trigger in order_transitions[current_state]
+    ):
         return order_transitions[current_state][trigger]
-    return None  # atau bisa raise Exception("Invalid transition")
+    raise Exception("Invalid transition")

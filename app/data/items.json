@@ -1,0 +1,67 @@
+[
+    {
+        "item_id": "I93412",
+        "name": "Laptop",
+        "price": 1000000.00
+    },
+    {
+        "item_id": "I44514",
+        "name": "Keyboard",
+        "price": 350000.00
+    },
+    {
+        "item_id": "I42134",
+        "name": "Mouse",
+        "price": 150000.00
+    },
+    {
+        "item_id": "I67823",
+        "name": "Monitor",
+        "price": 800000.00
+    },
+    {
+        "item_id": "I78245",
+        "name": "Headphones",
+        "price": 250000.00
+    },
+    {
+        "item_id": "I35612",
+        "name": "Webcam",
+        "price": 200000.00
+    },
+    {
+        "item_id": "I90125",
+        "name": "External SSD",
+        "price": 600000.00
+    },
+    {
+        "item_id": "I46789",
+        "name": "USB Hub",
+        "price": 120000.00
+    },
+    {
+        "item_id": "I23456",
+        "name": "Wireless Charger",
+        "price": 180000.00
+    },
+    {
+        "item_id": "I78901",
+        "name": "Bluetooth Speaker",
+        "price": 300000.00
+    },
+    {
+        "item_id": "I34567",
+        "name": "Laptop Stand",
+        "price": 150000.00
+    },
+    {
+        "item_id": "I89012",
+        "name": "Graphics Tablet",
+        "price": 750000.00
+    },
+    {
+        "item_id": "I45678",
+        "name": "Smartwatch",
+        "price": 500000.00
+    }
+]
