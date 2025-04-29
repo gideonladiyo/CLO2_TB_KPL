@@ -59,5 +59,3 @@ class OrderService:
         new_state = change_order_state(current_state=current_state, trigger=trigger)
         order["status"] = new_state.name
         self.save_orders
-    
-    
