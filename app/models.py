@@ -20,3 +20,11 @@ class OrderItemCreate(BaseModel):
 class OrderCreate(BaseModel):
     items: List[OrderItemCreate]
 
+class Item(BaseModel):
+    item_id: str
+    name: str
+    price: float
+
+class ItemCreate(BaseModel):
+    name: str
+    price: float
