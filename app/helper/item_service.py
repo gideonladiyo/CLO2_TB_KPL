@@ -1,4 +1,5 @@
 from app.utils.file_path import file_path
+from app.utils.generate_id import generate_random_id
 from app.models import *
 import json
 from fastapi import HTTPException
@@ -40,7 +41,7 @@ class ItemService:
         raise HTTPException(status_code=404, detail="Item tidak ditemukan")
 
     def create_item(self, item_create:ItemCreate):
-        new_id = "I00241"
+        new_id = generate_random_id(ids=[item["item_id"] for item in self.items], startswith="I", digit_number=5)
         
         # validasi harga
         if item_create.price > 0:
@@ -54,7 +55,7 @@ class ItemService:
             return new_data
         else:
             raise HTTPException(status_code=400, detail="Harga tidak boleh negatif")
-    
+
     def update_item(self, item_id: str, item_updated: ItemCreate):
         if item_updated.price < 0:
             raise HTTPException(status_code=400, detail="Harga tidak boleh negatif")
