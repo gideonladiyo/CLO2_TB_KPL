@@ -8,7 +8,7 @@
 # print(new_state.name)
 
 from fastapi import FastAPI
-from app.routes import item
+from app.routes import item, order
 from app.config import settings
 
 app = FastAPI(
@@ -29,3 +29,4 @@ app = FastAPI(
 )
 
 app.include_router(item.router)
+app.include_router(order.router)

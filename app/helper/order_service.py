@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timezone
 from fastapi import HTTPException
 from app.helper.item_service import item_service
+from app.utils.generate_id import generate_random_id
 
 class OrderService:
     def __init__(self):
@@ -42,7 +43,7 @@ class OrderService:
         raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
 
     def create_order(self, order_create: OrderCreate):
-        new_id = "O01111"
+        new_id = generate_random_id(ids=[order["id"] for order in self.orders], startswith="O", digit_number=5)
         current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
         items = []
         for item in order_create.items():

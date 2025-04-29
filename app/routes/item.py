@@ -9,7 +9,7 @@ router = APIRouter(prefix="/item", tags=["Item"])
 @router.get(
     "/",
     response_model=List[Item],
-    summary="Daftar barnang yang ada",
+    summary="Daftar barang yang ada",
     responses={
         200: {
             "description": "Daftar barang berhasil diambil",
