@@ -1,4 +1,4 @@
-from app.helper.file_path import file_path
+from app.utils.file_path import file_path
 from app.models import *
 import json
 from fastapi import HTTPException
