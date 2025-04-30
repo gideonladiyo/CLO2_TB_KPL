@@ -16,8 +16,18 @@ router = APIRouter(prefix="/item", tags=["Item"])
             "content": {
                 "application/json": {
                     "example": [
-                        {"item_id": "I93412", "name": "Laptop", "price": 1000000.00},
-                        {"item_id": "I44514", "name": "Keyboard", "price": 350000.00},
+                        {
+                            "item_id": "I93412",
+                            "name": "Laptop",
+                            "price": 1000000.00,
+                            "stock": 50,
+                        },
+                        {
+                            "item_id": "I44514",
+                            "name": "Keyboard",
+                            "price": 350000.00,
+                            "stock": 50,
+                        },
                     ]
                 }
             },
@@ -64,21 +74,24 @@ def get_item_by_id(item_id: str):
                         "item_id": "I44514",
                         "name": "Keyboard",
                         "price": 350000.00,
+                        "stock": 50
                     },
                 }
             },
         },
         400: {"description": "Harga tidak boleh negatif"},
+        400: {"description": "Stock tidak boleh negatif"},
     },
 )
 def add_item(item_create: ItemCreate):
     return item_service.create_item(item_create=item_create)
 
+
 @router.put(
     "/{item_id}",
     response_model=Item,
     summary="Mengubah data item",
-    responses = {
+    responses={
         200: {
             "description": "Daftar barang berhasil diupdate",
             "content": {
@@ -87,10 +100,13 @@ def add_item(item_create: ItemCreate):
                         "item_id": "I44514",
                         "name": "Keyboard",
                         "price": 350000.00,
+                        "stock": 50,
                     },
                 }
             },
-        }
+        },
+        400: {"description": "Harga tidak boleh negatif"},
+        400: {"description": "Stock tidak boleh negatif"},
     },
 )
 def update_item(item_id: str, item_udpdated: ItemCreate):

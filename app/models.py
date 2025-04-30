@@ -24,7 +24,9 @@ class Item(BaseModel):
     item_id: str
     name: str
     price: float
+    stock: int
 
 class ItemCreate(BaseModel):
     name: str
     price: float
+    stock: int

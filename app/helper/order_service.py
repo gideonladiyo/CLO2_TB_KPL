@@ -25,18 +25,17 @@ class OrderService:
         try:
             with open(self.order_path, "w") as f:
                 json.dump(self.orders, f, indent=4)
+            self.orders = self.load_orders()
         except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_orders(self) -> List:
-        self.orders = self.load_orders()
         result = []
         for order in self.orders:
             result.append(order)
         return result
 
     def get_order(self, id:str) -> dict:
-        self.orders = self.load_orders()
         for order in self.orders:
             if order["id"] == id:
                 return order
@@ -46,10 +45,14 @@ class OrderService:
         new_id = generate_random_id(ids=[order["id"] for order in self.orders], startswith="O", digit_number=5)
         current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
         items = []
-        for item in order_create.items():
-            current_item = item_service.get_item(id=item.item_id)
+        for item in order_create.items:
+            if item.quantity < 1:
+                raise HTTPException(
+                    status_code=422, detail="Jumlah barang yang dipesan minimal 1"
+                )
+            item_service.buy_item(id=item.item_id, qty=item.quantity)
             items.append({
-                "item_id": current_item.item_id,
+                "item_id": item.item_id,
                 "quantity": item.quantity
             })
         new_order = {
@@ -68,14 +71,25 @@ class OrderService:
         order = self.get_order(id)
         current_state = order["status"]
         new_state = change_order_state(current_state=current_state, trigger=trigger)
+        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
         order["status"] = new_state.name
-        self.save_orders
-
-    def cancel_order(self, id:str):
-        order = self.get_order(id)
-        current_state = order["status"]
-        new_state = change_order_state(current_state=current_state, trigger="CANCEL")
-        order["status"] = new_state.name
+        order["updated_at"] = current_time
         self.save_orders()
+
+    def get_order_stats(self):
+        status_map = {
+            "NEW": [],
+            "CANCEL": [],
+            "PAID": [],
+            "SHIPPED": [],
+            "DELIVERED": []
+        }
+
+        for order in self.orders:
+            status = order["status"]
+            if status in status_map:
+                status_map[status].append(order)
+
+        return status_map
 
 order_service = OrderService()
