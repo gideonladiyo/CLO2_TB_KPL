@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from app.helper.item_service import item_service
 from app.utils.generate_id import generate_random_id
+from app.utils.daily_limit import check_limit_order
+from app.config import settings
 
 class OrderService:
     def __init__(self):
@@ -42,6 +44,8 @@ class OrderService:
         raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
 
     def create_order(self, order_create: OrderCreate):
+        orders_date = [order["created_at"] for order in self.orders]
+        check_limit_order(orders_date=orders_date, max_order=settings.max_orders_per_day)
         new_id = generate_random_id(ids=[order["id"] for order in self.orders], startswith="O", digit_number=5)
         current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
         items = []

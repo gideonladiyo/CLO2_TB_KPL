@@ -1,19 +1,15 @@
 from datetime import datetime, date
 from fastapi import HTTPException
-from app.config import settings
 from typing import List
 
-def check_limit(orders: list):
+def check_limit_order(orders_date: List, max_order:int):
     count = 0
     today = date.today()
-    for order in orders:
+    for order_date in orders_date:
         try:
-            order_date = datetime.strptime(order["created_at"], "%Y-%m-%d %H:%M:%S.%f").date()
             if order_date == today:
                 count += 1
         except (KeyError, ValueError):
             continue
-    if count == settings.max_orders_per_day:
+    if count >= max_order:
         raise HTTPException(status_code=429, detail="Order sudah mencapai limit")
-
-
