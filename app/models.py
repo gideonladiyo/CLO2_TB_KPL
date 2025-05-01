@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
+from typing import List, Optional, Generic, TypeVar
 
 class OrderItem(BaseModel):
     item_id: str
@@ -30,3 +30,10 @@ class ItemCreate(BaseModel):
     name: str
     price: float
     stock: int
+
+T = TypeVar('T')
+
+class BaseResponse(Generic[T], BaseModel):
+    status: str
+    message: str
+    data: Optional[T] = None
