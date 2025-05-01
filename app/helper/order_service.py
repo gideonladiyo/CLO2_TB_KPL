@@ -8,6 +8,7 @@ from fastapi import HTTPException
 from app.helper.item_service import item_service
 from app.utils.generate_id import generate_random_id
 from app.utils.daily_limit import check_limit_order
+from app.utils.current_time import get_current_time_str
 from app.config import settings
 
 class OrderService:
@@ -27,15 +28,11 @@ class OrderService:
         try:
             with open(self.order_path, "w") as f:
                 json.dump(self.orders, f, indent=4)
-            self.orders = self.load_orders()
         except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_orders(self) -> List:
-        result = []
-        for order in self.orders:
-            result.append(order)
-        return result
+        return self.orders
 
     def get_order(self, id:str) -> dict:
         for order in self.orders:
@@ -47,7 +44,7 @@ class OrderService:
         orders_date = [order["created_at"] for order in self.orders]
         check_limit_order(orders_date=orders_date, max_order=settings.max_orders_per_day)
         new_id = generate_random_id(ids=[order["id"] for order in self.orders], startswith="O", digit_number=5)
-        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+        current_time = get_current_time_str()
         items = []
         for item in order_create.items:
             if item.quantity < 1:
@@ -75,19 +72,12 @@ class OrderService:
         order = self.get_order(id)
         current_state = order["status"]
         new_state = change_order_state(current_state=current_state, trigger=trigger)
-        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
         order["status"] = new_state.name
-        order["updated_at"] = current_time
+        order["updated_at"] = get_current_time_str()
         self.save_orders()
 
     def get_order_stats(self):
-        status_map = {
-            "NEW": [],
-            "CANCEL": [],
-            "PAID": [],
-            "SHIPPED": [],
-            "DELIVERED": []
-        }
+        status_map = {state.value: [] for state in OrderState}
 
         for order in self.orders:
             status = order["status"]

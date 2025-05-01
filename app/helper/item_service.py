@@ -1,4 +1,5 @@
 from app.utils.file_path import file_path
+from app.utils.stock_price_validation import validate_item
 from app.utils.generate_id import generate_random_id
 from app.models import *
 import json
@@ -15,7 +16,6 @@ class ItemService:
             with open(self.item_path, "r") as f:
                 data = json.load(f)
                 return data
-            self.items = self.load_items()
         except (json.JSONDecodeError, FileNotFoundError, ValueError) as e:
             print(f"[Error] Failed to load data: {e}")
 
@@ -23,14 +23,12 @@ class ItemService:
         try:
             with open(self.item_path, "w") as f:
                 json.dump(self.items, f, indent=4)
+            self.items = self.load_items()
         except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_items(self) -> List:
-        result = []
-        for item in self.items:
-            result.append(item)
-        return result
+        return self.items
 
     def get_item(self, id: str) -> dict:
         for item in self.items:
@@ -41,44 +39,40 @@ class ItemService:
 
     def create_item(self, item_create:ItemCreate):
         new_id = generate_random_id(ids=[item["item_id"] for item in self.items], startswith="I", digit_number=5)
-
-        if item_create.price < 0:
-            raise HTTPException(status_code=400, detail="Harga tidak boleh negatif")
-
-        if item_create.stock < 0:
-            raise HTTPException(status_code=400, detail="Stok tidak boleh negatif")
-
+        validate_item(item=item_create)
         new_data = {
             "item_id": new_id,
             "name": item_create.name,
-            "price": item_create.price
+            "price": item_create.price,
+            "stock": item_create.stock
         }
         self.items.append(new_data)
         self.save_items()
         return new_data
-
-    def update_item(self, item_id: str, item_updated: ItemCreate):
-        if item_updated.price < 0:
-            raise HTTPException(status_code=400, detail="Harga tidak boleh negatif")
-        if item_updated.stock < 0:
-            raise HTTPException(status_code=400, detail="Stok tidak boleh negatif")
-        self.items = self.load_items()
-        for item in self.items:
-            if item["item_id"] == item_id:
-                item["name"] = item_updated.name
-                item["price"] = item_updated.price
-                item["stock"] = item_updated.stock
-                self.save_items()
-                return item
-        raise HTTPException(status_code=404, detail="Item tidak ditemukan")
-
-    def delete_item(self, item_id: str):
+    
+    def find_item_idx(self, item_id: str) -> int:
         for idx, item in enumerate(self.items):
             if item["item_id"] == item_id:
-                del self.items[idx]
-                self.save_items()
-                return {"message": f"Item dengan id {item_id} telah dihapus"}
-        raise HTTPException(status_code=404, detail="Item tidak ditemukan")
+                return idx
+        return -1
+
+    def update_item(self, item_id: str, item_updated: ItemCreate):
+        validate_item(item=item_updated)
+        idx = self.find_item_idx(item_id=item_id)
+        if idx == -1:
+            raise HTTPException(status_code=404, detail="Item tidak ditemukan")
+        self.items[idx]["name"] == item_updated.name
+        self.items[idx]["price"] == item_updated.price
+        self.items[idx]["stock"] == item_updated.stock
+        self.save_items()
+
+    def delete_item(self, item_id: str):
+        idx = self.find_item_idx(item_id=item_id)
+        if idx == -1:
+            raise HTTPException(status_code=404, detail="Item tidak ditemukan")
+        del self.items[idx]
+        self.save_items()
+        return {"message": f"Item dengan id {item_id} telah dihapus"}
 
     def buy_item(self, id: str, qty: int):
         current_item = self.get_item(id=id)

@@ -8,7 +8,7 @@ router = APIRouter(prefix="/order", tags=["Order"])
 
 @router.get(
     "/",
-    response_model=List[Order],
+    response_model=BaseResponse[List[Order]],
     summary="Ambil daftar semua pesanan",
     description="""
 Endpoint ini digunakan untuk mengambil seluruh data pesanan yang tersedia di sistem.
@@ -25,37 +25,62 @@ Gunakan endpoint ini untuk menampilkan semua riwayat atau daftar pesanan pelangg
             "description": "Daftar pesanan berhasil diambil",
             "content": {
                 "application/json": {
-                    "example": [
-                        {
-                            "id": "O51353",
-                            "items": [
-                                {"item_id": "I23456", "quantity": 2},
-                                {"item_id": "I34567", "quantity": 1},
-                            ],
-                            "status": "NEW",
-                            "created_at": "2025-04-28 10:15:00.000000",
-                            "updated_at": "2025-04-28 10:15:00.000000",
-                        },
-                        {
-                            "id": "O51354",
-                            "items": [{"item_id": "I45678", "quantity": 3}],
-                            "status": "PAID",
-                            "created_at": "2025-04-28 11:30:22.543210",
-                            "updated_at": "2025-04-28 12:05:17.987654",
-                        },
-                    ]
+                    "example": {
+                        "status": "Success",
+                        "message": "Data pesanan berhasil diambil",
+                        "data": [
+                            {
+                                "id": "O51353",
+                                "items": [
+                                    {"item_id": "I23456", "quantity": 2},
+                                    {"item_id": "I34567", "quantity": 1},
+                                ],
+                                "status": "NEW",
+                                "created_at": "2025-04-28 10:15:00.000000",
+                                "updated_at": "2025-04-28 10:15:00.000000",
+                            },
+                            {
+                                "id": "O51354",
+                                "items": [{"item_id": "I45678", "quantity": 3}],
+                                "status": "PAID",
+                                "created_at": "2025-04-28 11:30:22.543210",
+                                "updated_at": "2025-04-28 12:05:17.987654",
+                            },
+                        ],
+                    }
                 }
             },
         }
     },
 )
 def get_all_orders():
-    return order_service.get_all_orders()
+    orders = order_service.get_all_orders()
+    return BaseResponse(
+        status="Success", message="Data pesanan berhasil diambil", data=orders
+    )
+
+
+# @router.get(
+#     "/statistic",
+#     response_model=BaseResponse[OrderStatsResponse],
+#     summary="Mengambil statistik data semua pesanan",
+#     description="""
+#     Mengakumulasikan data pesanan berdasarkan status pesanan yaitu NEW, PAID, CANCEL, SHIPPED, DELIVERED
+#     """,
+# )
+# def get_order_satistic():
+#     print("tes")
+#     order_stats = order_service.get_order_stats()
+#     return BaseResponse(
+#         status="Success",
+#         message="Berhasil mengambil statistik pesanan",
+#         data=order_stats,
+#     )
 
 
 @router.get(
     "/{id}",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Ambil detail pesanan berdasarkan ID",
     description="""
 Endpoint ini digunakan untuk mengambil informasi lengkap dari satu pesanan berdasarkan ID yang diberikan.
@@ -74,11 +99,18 @@ Contoh penggunaan:
             "content": {
                 "application/json": {
                     "example": {
-                        "id": "O51354",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "PAID",
-                        "created_at": "2025-04-28 11:30:22.543210",
-                        "updated_at": "2025-04-28 12:05:17.987654",
+                        "status": "Success",
+                        "message": "Data pesanan berdasarkan ID berhasil diambil",
+                        "data": {
+                            "id": "O51353",
+                            "items": [
+                                {"item_id": "I23456", "quantity": 2},
+                                {"item_id": "I34567", "quantity": 1},
+                            ],
+                            "status": "NEW",
+                            "created_at": "2025-04-28T10:15:00",
+                            "updated_at": "2025-04-28T10:15:00",
+                        },
                     }
                 }
             },
@@ -94,11 +126,17 @@ Contoh penggunaan:
     },
 )
 def get_order_by_id(id: str):
-    return order_service.get_order(id)
+    order = order_service.get_order(id)
+    return BaseResponse(
+        status="Success",
+        message="Data pesanan berdasarkan ID berhasil diambil",
+        data=order,
+    )
+
 
 @router.post(
     "/",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Buat pesanan baru",
     description="""
     Membuat pesanan dengan daftar item dan jumlah masing-masing.
@@ -110,11 +148,15 @@ def get_order_by_id(id: str):
             "content": {
                 "application/json": {
                     "example": {
-                        "id": "O12345",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "NEW",
-                        "created_at": "2025-04-28 13:00:00.000000",
-                        "updated_at": "2025-04-28 13:00:00.000000",
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibuat",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "NEW",
+                            "created_at": "2025-05-01T04:24:54.646025",
+                            "updated_at": "2025-05-01T04:24:54.646025",
+                        },
                     }
                 }
             },
@@ -122,12 +164,15 @@ def get_order_by_id(id: str):
     },
 )
 def create_order(order_create: OrderCreate):
-    return order_service.create_order(order_create)
+    new_order = order_service.create_order(order_create)
+    return BaseResponse(
+        status="Success", message="Pesanan berhasil dibuat", data=new_order
+    )
 
 
 @router.post(
     "/{id}/pay",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Mengubah status pesanan menjadi PAID",
     description="""
     Melakukan pembayaran terhadap pesanan dengan ID tertentu.
@@ -141,11 +186,15 @@ def create_order(order_create: OrderCreate):
             "content": {
                 "application/json": {
                     "example": {
-                        "id": "O12345",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "PAID",
-                        "created_at": "2025-04-28 13:00:00.000000",
-                        "updated_at": "2025-04-28 13:00:00.000000",
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "PAID",
+                            "created_at": "2025-05-01T04:24:54.646025",
+                            "updated_at": "2025-05-01T04:25:56.024937",
+                        },
                     }
                 }
             },
@@ -170,12 +219,15 @@ def create_order(order_create: OrderCreate):
 )
 def pay_order(id: str):
     order_service.change_order_state(id=id, trigger="PAY")
-    return order_service.get_order(id=id)
+    updated_order = order_service.get_order(id=id)
+    return BaseResponse(
+        status="Success", message="Pesanan berhasil dibayar", data=updated_order
+    )
 
 
 @router.post(
     "/{id}/cancel",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Mengubah status pesanan menjadi CANCEL",
     description="""
     Melakukan pembayaran terhadap pesanan dengan ID tertentu.
@@ -189,11 +241,15 @@ def pay_order(id: str):
             "content": {
                 "application/json": {
                     "example": {
-                        "id": "O12345",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "PAID",
-                        "created_at": "2025-04-28 13:00:00.000000",
-                        "updated_at": "2025-04-28 13:00:00.000000",
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "CANCEL",
+                            "created_at": "2025-05-01T04:24:54.646025",
+                            "updated_at": "2025-05-01T04:25:56.024937",
+                        },
                     }
                 }
             },
@@ -218,12 +274,15 @@ def pay_order(id: str):
 )
 def cancel_order(id: str):
     order_service.change_order_state(id=id, trigger="CANCEL")
-    return order_service.get_order(id=id)
+    updated_order = order_service.get_order(id=id)
+    BaseResponse(
+        status="Success", message="Pesanan berhasil dibatalkan", data=updated_order
+    )
 
 
 @router.post(
     "/{id}/ship",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Mengubah status pesanan menjadi SHIPPED",
     description="""
     Melakukan pembayaran terhadap pesanan dengan ID tertentu.
@@ -236,13 +295,15 @@ def cancel_order(id: str):
             "description": "Pesanan berhasil dikirim",
             "content": {
                 "application/json": {
-                    "example": {
-                        "id": "O12345",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "PAID",
-                        "created_at": "2025-04-28 13:00:00.000000",
-                        "updated_at": "2025-04-28 13:00:00.000000",
-                    }
+                    "status": "Success",
+                    "message": "Pesanan berhasil dibayar",
+                    "data": {
+                        "id": "O61848",
+                        "items": [{"item_id": "I42134", "quantity": 2}],
+                        "status": "SHIPPED",
+                        "created_at": "2025-05-01T04:24:54.646025",
+                        "updated_at": "2025-05-01T04:25:56.024937",
+                    },
                 }
             },
         },
@@ -266,12 +327,15 @@ def cancel_order(id: str):
 )
 def ship_order(id: str):
     order_service.change_order_state(id=id, trigger="SHIP")
-    return order_service.get_order(id=id)
+    updated_order = order_service.get_order(id=id)
+    BaseResponse(
+        status="Success", message="Pesanan berhasil dikirim", data=updated_order
+    )
 
 
 @router.post(
     "/{id}/complete",
-    response_model=Order,
+    response_model=BaseResponse[Order],
     summary="Mengubah status pesanan menjadi DELIVERED",
     description="""
     Melakukan pembayaran terhadap pesanan dengan ID tertentu.
@@ -285,11 +349,15 @@ def ship_order(id: str):
             "content": {
                 "application/json": {
                     "example": {
-                        "id": "O12345",
-                        "items": [{"item_id": "I45678", "quantity": 3}],
-                        "status": "PAID",
-                        "created_at": "2025-04-28 13:00:00.000000",
-                        "updated_at": "2025-04-28 13:00:00.000000",
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "DELIVERED",
+                            "created_at": "2025-05-01T04:24:54.646025",
+                            "updated_at": "2025-05-01T04:25:56.024937",
+                        },
                     }
                 }
             },
@@ -314,7 +382,10 @@ def ship_order(id: str):
 )
 def complete_order(id: str):
     order_service.change_order_state(id=id, trigger="DELIVER")
-    return order_service.get_order(id=id)
+    updated_order = order_service.get_order(id=id)
+    BaseResponse(
+        status="Success", message="Pesanan berhasil diterima", data=updated_order
+    )
 
 
 # @router.patch(

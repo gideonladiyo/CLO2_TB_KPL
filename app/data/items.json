@@ -15,7 +15,7 @@
         "item_id": "I42134",
         "name": "Mouse",
         "price": 150000.0,
-        "stock": 32
+        "stock": 30
     },
     {
         "item_id": "I67823",
@@ -76,5 +76,10 @@
         "name": "Smartwatch",
         "price": 500000.0,
         "stock": 50
+    },
+    {
+        "item_id": "I35393",
+        "name": "Botol",
+        "price": 10000.0
     }
 ]

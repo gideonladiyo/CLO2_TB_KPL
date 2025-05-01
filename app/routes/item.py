@@ -8,39 +8,46 @@ router = APIRouter(prefix="/item", tags=["Item"])
 
 @router.get(
     "/",
-    response_model=List[Item],
+    response_model=BaseResponse[List[Item]],
     summary="Daftar barang yang ada",
     responses={
         200: {
             "description": "Daftar barang berhasil diambil",
             "content": {
                 "application/json": {
-                    "example": [
-                        {
-                            "item_id": "I93412",
-                            "name": "Laptop",
-                            "price": 1000000.00,
-                            "stock": 50,
-                        },
-                        {
-                            "item_id": "I44514",
-                            "name": "Keyboard",
-                            "price": 350000.00,
-                            "stock": 50,
-                        },
-                    ]
+                    "example": {
+                        "status": "Success",
+                        "message": "Data barang berhasil diambil",
+                        "data": [
+                            {
+                                "item_id": "I93412",
+                                "name": "Laptop",
+                                "price": 1000000,
+                                "stock": 50,
+                            },
+                            {
+                                "item_id": "I44514",
+                                "name": "Keyboard",
+                                "price": 350000,
+                                "stock": 50,
+                            },
+                        ],
+                    }
                 }
             },
         }
     },
 )
 def get_all_items():
-    return item_service.get_all_items()
+    all_item = item_service.get_all_items()
+    return BaseResponse(
+        status="Success", message="Data barang berhasil diambil", data=all_item
+    )
 
 
 @router.get(
     "/{item_id}",
-    response_model=Item,
+    response_model=BaseResponse[Item],
     summary="Data item berdasarkan id",
     responses={
         200: {
@@ -48,21 +55,32 @@ def get_all_items():
             "content": {
                 "application/json": {
                     "example": {
-                        "item_id": "I44514",
-                        "name": "Keyboard",
-                        "price": 350000.00,
-                    },
+                        "status": "Success",
+                        "message": "Data barang berdasarkan ID berhasil diambil",
+                        "data": {
+                            "item_id": "I42134",
+                            "name": "Mouse",
+                            "price": 150000,
+                            "stock": 30,
+                        },
+                    }
                 }
             },
         }
     },
 )
 def get_item_by_id(item_id: str):
-    return item_service.get_item(id=item_id)
+    item = item_service.get_item(id=item_id)
+    return BaseResponse(
+        status="Success",
+        message="Data barang berdasarkan ID berhasil diambil",
+        data=item,
+    )
+
 
 @router.post(
     "/",
-    response_model=Item,
+    response_model=BaseResponse[Item],
     summary="Menambah item baru",
     status_code=201,
     responses={
@@ -71,11 +89,15 @@ def get_item_by_id(item_id: str):
             "content": {
                 "application/json": {
                     "example": {
-                        "item_id": "I44514",
-                        "name": "Keyboard",
-                        "price": 350000.00,
-                        "stock": 50
-                    },
+                        "status": "Success",
+                        "message": "Barang berhasil ditambahkan",
+                        "data": {
+                            "item_id": "I07707",
+                            "name": "Botol",
+                            "price": 10000,
+                            "stock": 100,
+                        },
+                    }
                 }
             },
         },
@@ -84,12 +106,15 @@ def get_item_by_id(item_id: str):
     },
 )
 def add_item(item_create: ItemCreate):
-    return item_service.create_item(item_create=item_create)
+    new_item = item_service.create_item(item_create=item_create)
+    return BaseResponse(
+        status="Success", message="Barang berhasil ditambahkan", data=new_item
+    )
 
 
 @router.put(
     "/{item_id}",
-    response_model=Item,
+    response_model=BaseResponse[Item],
     summary="Mengubah data item",
     responses={
         200: {
@@ -97,11 +122,15 @@ def add_item(item_create: ItemCreate):
             "content": {
                 "application/json": {
                     "example": {
-                        "item_id": "I44514",
-                        "name": "Keyboard",
-                        "price": 350000.00,
-                        "stock": 50,
-                    },
+                        "status": "Success",
+                        "message": "Data barang berhasil diubah",
+                        "data": {
+                            "item_id": "I07707",
+                            "name": "botol",
+                            "price": 12000,
+                            "stock": 120,
+                        },
+                    }
                 }
             },
         },
@@ -110,7 +139,10 @@ def add_item(item_create: ItemCreate):
     },
 )
 def update_item(item_id: str, item_udpdated: ItemCreate):
-    return item_service.update_item(item_id=item_id, item_updated=item_udpdated)
+    updated_item = item_service.update_item(item_id=item_id, item_updated=item_udpdated)
+    return BaseResponse(
+        status="Success", message="Data barang berhasil diubah", data=updated_item
+    )
 
 @router.delete(
     "/{item_id}",
