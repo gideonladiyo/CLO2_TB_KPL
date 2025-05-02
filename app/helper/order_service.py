@@ -3,7 +3,6 @@ from app.fsm.order_fsm import *
 from app.models import *
 from typing import List
 import json
-from datetime import datetime, timezone
 from fastapi import HTTPException
 from app.helper.item_service import item_service
 from app.utils.generate_id import generate_random_id
@@ -76,14 +75,12 @@ class OrderService:
         order["updated_at"] = get_current_time_str()
         self.save_orders()
 
-    def get_order_stats(self):
-        status_map = {state.value: [] for state in OrderState}
+    def get_order_stats(self, status: str):
+        print([state.name for state in OrderState])
+        if status.upper() not in [state.name for state in OrderState]:
+            raise HTTPException(status_code=400, detail="Input status tidak valid")
+        result = [order for order in self.orders if order["status"] == status.upper()]
 
-        for order in self.orders:
-            status = order["status"]
-            if status in status_map:
-                status_map[status].append(order)
-
-        return status_map
+        return result
 
 order_service = OrderService()

@@ -13,13 +13,6 @@ class Order(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class OrderStatsResponse(BaseModel):
-    NEW: List[Order]
-    CANCEL: List[Order]
-    PAID: List[Order]
-    SHIPPED: List[Order]
-    DELIVERED: List[Order]
-
 class OrderItemCreate(BaseModel):
     item_id: str
     quantity: int

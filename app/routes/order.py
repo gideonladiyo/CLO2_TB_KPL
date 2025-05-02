@@ -60,22 +60,21 @@ def get_all_orders():
     )
 
 
-# @router.get(
-#     "/statistic",
-#     response_model=BaseResponse[OrderStatsResponse],
-#     summary="Mengambil statistik data semua pesanan",
-#     description="""
-#     Mengakumulasikan data pesanan berdasarkan status pesanan yaitu NEW, PAID, CANCEL, SHIPPED, DELIVERED
-#     """,
-# )
-# def get_order_satistic():
-#     print("tes")
-#     order_stats = order_service.get_order_stats()
-#     return BaseResponse(
-#         status="Success",
-#         message="Berhasil mengambil statistik pesanan",
-#         data=order_stats,
-#     )
+@router.get(
+    "/status/{status}",
+    response_model=BaseResponse[List[Order]],
+    summary="Mengambil data pesanan berdasarkan status",
+    description="""
+    Mengambil data pesanan berdasarkan status pesanan yaitu NEW, PAID, CANCEL, SHIPPED, DELIVERED
+    """,
+)
+def get_order_satistic(status: str):
+    order_stats = order_service.get_order_stats(status=status)
+    return BaseResponse(
+        status="Success",
+        message="Berhasil mengambil statistik pesanan",
+        data=order_stats,
+    )
 
 
 @router.get(
@@ -386,63 +385,3 @@ def complete_order(id: str):
     BaseResponse(
         status="Success", message="Pesanan berhasil diterima", data=updated_order
     )
-
-
-# @router.patch(
-#     "/{id}/status",
-#     response_model=Order,
-#     summary="Mengubah status pesanan berdasarkan trigger input",
-#     description="""
-# Mengubah status pesanan berdasarkan trigger yang diberikan.
-
-# Trigger yang valid: `PAY`, `CANCEL`, `SHIP`, `DELIVER`.
-
-# Jika transisi status tidak valid untuk kondisi saat ini, maka akan menghasilkan HTTP 422.
-# """,
-#     responses={
-#         200: {
-#             "description": "Status pesanan berhasil diubah",
-#             "content": {
-#                 "application/json": {
-#                     "example": {
-#                         "id": "O12345",
-#                         "items": [{"item_id": "I45678", "quantity": 3}],
-#                         "status": "PAID",
-#                         "created_at": "2025-04-28 13:00:00.000000",
-#                         "updated_at": "2025-04-28 13:05:00.000000",
-#                     }
-#                 }
-#             },
-#         },
-#         404: {
-#             "description": "Pesanan tidak ditemukan",
-#             "content": {
-#                 "application/json": {
-#                     "example": {"detail": "Order with id 'O12345' not found"}
-#                 }
-#             },
-#         },
-#         400: {
-#             "description": "Trigger tidak valid",
-#             "content": {
-#                 "application/json": {"example": {"detail": "Invalid trigger: PAYX"}}
-#             },
-#         },
-#         422: {
-#             "description": "Transisi status tidak diperbolehkan",
-#             "content": {
-#                 "application/json": {
-#                     "example": {"detail": "Invalid transition from SHIPPED using PAY"}
-#                 }
-#             },
-#         },
-#     },
-# )
-# def change_order_status(
-#     id: str,
-#     trigger: str = Query(
-#         ..., description="Trigger status (misal: PAY, CANCEL, SHIP, DELIVER)"
-#     ),
-# ):
-#     order_service.change_order_state(id=id, trigger=trigger.upper())
-#     return order_service.get_order(id=id)
