@@ -23,7 +23,6 @@ class ItemService:
         try:
             with open(self.item_path, "w") as f:
                 json.dump(self.items, f, indent=4)
-            self.items = self.load_items()
         except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
             print(f"[Error] Failed to save data: {e}")
 
@@ -49,7 +48,7 @@ class ItemService:
         self.items.append(new_data)
         self.save_items()
         return new_data
-    
+
     def find_item_idx(self, item_id: str) -> int:
         for idx, item in enumerate(self.items):
             if item["item_id"] == item_id:
@@ -61,9 +60,9 @@ class ItemService:
         idx = self.find_item_idx(item_id=item_id)
         if idx == -1:
             raise HTTPException(status_code=404, detail="Item tidak ditemukan")
-        self.items[idx]["name"] == item_updated.name
-        self.items[idx]["price"] == item_updated.price
-        self.items[idx]["stock"] == item_updated.stock
+        self.items[idx]["name"] = item_updated.name
+        self.items[idx]["price"] = item_updated.price
+        self.items[idx]["stock"] = item_updated.stock
         self.save_items()
 
     def delete_item(self, item_id: str):
@@ -76,9 +75,11 @@ class ItemService:
 
     def buy_item(self, id: str, qty: int):
         current_item = self.get_item(id=id)
+        print(current_item)
         if current_item["stock"] < qty:
             raise HTTPException(status_code=400, detail="Stok tidak cukup")
         current_item["stock"] -= qty
+        print(current_item)
         self.save_items()
 
 item_service = ItemService()
