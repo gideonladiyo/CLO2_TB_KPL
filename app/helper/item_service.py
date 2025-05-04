@@ -77,11 +77,9 @@ class ItemService:
 
     def buy_item(self, id: str, qty: int):
         current_item = self.get_item(id=id)
-        print(current_item)
         if current_item["stock"] < qty:
             raise HTTPException(status_code=400, detail="Stok tidak cukup")
         current_item["stock"] -= qty
-        print(current_item)
         self.save_items()
 
 item_service = ItemService()

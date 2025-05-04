@@ -40,6 +40,8 @@ class OrderService:
         raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
 
     def create_order(self, order_create: OrderCreate):
+        if len(order_create.items) == 0:
+            raise HTTPException(status_code=400, detail="Pesanan tidak boleh kosong")
         orders_date = [order["created_at"] for order in self.orders]
         check_limit_order(orders_date=orders_date, max_order=settings.max_orders_per_day)
         new_id = generate_random_id(ids=[order["id"] for order in self.orders], startswith="O", digit_number=5)
@@ -76,7 +78,6 @@ class OrderService:
         self.save_orders()
 
     def get_order_stats(self, status: str):
-        print([state.name for state in OrderState])
         if status.upper() not in [state.name for state in OrderState]:
             raise HTTPException(status_code=400, detail="Input status tidak valid")
         result = [order for order in self.orders if order["status"] == status.upper()]

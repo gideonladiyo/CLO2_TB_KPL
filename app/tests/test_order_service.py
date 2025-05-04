@@ -11,25 +11,22 @@ TEST_ORDER_PATH = "test_orders.json"
 
 @pytest.fixture
 def temp_order_service(monkeypatch):
-    # Simulasi file JSON sementara
     dummy_orders = []
     with open(TEST_ORDER_PATH, "w") as f:
         json.dump(dummy_orders, f)
 
-    # Override path ke file dummy
     monkeypatch.setattr(
         "app.helper.order_service.file_path.ORDERS_PATH", TEST_ORDER_PATH
     )
     service = OrderService()
     yield service
 
-    # Bersihkan file setelah test
     os.remove(TEST_ORDER_PATH)
 
 
 def test_create_order_success(temp_order_service, monkeypatch):
     dummy_items = [{"item_id": "I0001", "name": "Item1", "price": 1000, "stock": 10}]
-    # Mock item_service.get_item dan buy_item
+
     monkeypatch.setattr(
         "app.helper.order_service.item_service.get_item", lambda id: dummy_items[0]
     )
@@ -51,7 +48,6 @@ def test_get_order_not_found(temp_order_service):
 
 
 def test_change_order_state_success(temp_order_service, monkeypatch):
-    # Simpan dummy order
     order_data = {
         "id": "O0001",
         "items": [],

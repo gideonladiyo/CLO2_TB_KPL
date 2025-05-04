@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
 from app.main import app
+from app.utils.file_path import file_path
+import json
 
 client = TestClient(app)
 
@@ -15,10 +17,13 @@ def test_get_items():
         assert item["stock"] > 0
 
 def test_get_item():
-    response = client.get("/item/I93412")
+    with open(file_path.ITEMS_PATH, "r") as f:
+        data = json.load(f)
+    item_id = data[0]["item_id"]
+    response = client.get(f"/item/{item_id}")
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data["item_id"] == "I93412"
+    assert data["item_id"] == item_id
     assert len(data["name"]) > 0
     assert data["price"] > 0
     assert data["stock"] > 0

@@ -36,15 +36,15 @@ Gunakan endpoint ini untuk menampilkan semua riwayat atau daftar pesanan pelangg
                                     {"item_id": "I34567", "quantity": 1},
                                 ],
                                 "status": "NEW",
-                                "created_at": "2025-04-28 10:15:00.000000",
-                                "updated_at": "2025-04-28 10:15:00.000000",
+                                "created_at": "2025-04-28 10:15:00",
+                                "updated_at": "2025-04-28 10:15:00",
                             },
                             {
                                 "id": "O51354",
                                 "items": [{"item_id": "I45678", "quantity": 3}],
                                 "status": "PAID",
-                                "created_at": "2025-04-28 11:30:22.543210",
-                                "updated_at": "2025-04-28 12:05:17.987654",
+                                "created_at": "2025-04-28 11:30:22",
+                                "updated_at": "2025-04-28 12:05:17",
                             },
                         ],
                     }
@@ -107,8 +107,8 @@ Contoh penggunaan:
                                 {"item_id": "I34567", "quantity": 1},
                             ],
                             "status": "NEW",
-                            "created_at": "2025-04-28T10:15:00",
-                            "updated_at": "2025-04-28T10:15:00",
+                            "created_at": "2025-04-28 10:15:00",
+                            "updated_at": "2025-04-28 10:15:00",
                         },
                     }
                 }
@@ -153,8 +153,8 @@ def get_order_by_id(id: str):
                             "id": "O61848",
                             "items": [{"item_id": "I42134", "quantity": 2}],
                             "status": "NEW",
-                            "created_at": "2025-05-01T04:24:54.646025",
-                            "updated_at": "2025-05-01T04:24:54.646025",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:24:54",
                         },
                     }
                 }
@@ -191,8 +191,8 @@ def create_order(order_create: OrderCreate):
                             "id": "O61848",
                             "items": [{"item_id": "I42134", "quantity": 2}],
                             "status": "PAID",
-                            "created_at": "2025-05-01T04:24:54.646025",
-                            "updated_at": "2025-05-01T04:25:56.024937",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:25:56",
                         },
                     }
                 }
@@ -246,8 +246,8 @@ def pay_order(id: str):
                             "id": "O61848",
                             "items": [{"item_id": "I42134", "quantity": 2}],
                             "status": "CANCEL",
-                            "created_at": "2025-05-01T04:24:54.646025",
-                            "updated_at": "2025-05-01T04:25:56.024937",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:25:56",
                         },
                     }
                 }
@@ -274,7 +274,7 @@ def pay_order(id: str):
 def cancel_order(id: str):
     order_service.change_order_state(id=id, trigger="CANCEL")
     updated_order = order_service.get_order(id=id)
-    BaseResponse(
+    return BaseResponse(
         status="Success", message="Pesanan berhasil dibatalkan", data=updated_order
     )
 
@@ -300,8 +300,8 @@ def cancel_order(id: str):
                         "id": "O61848",
                         "items": [{"item_id": "I42134", "quantity": 2}],
                         "status": "SHIPPED",
-                        "created_at": "2025-05-01T04:24:54.646025",
-                        "updated_at": "2025-05-01T04:25:56.024937",
+                        "created_at": "2025-05-01 04:24:54",
+                        "updated_at": "2025-05-01 04:24:54",
                     },
                 }
             },
@@ -327,7 +327,7 @@ def cancel_order(id: str):
 def ship_order(id: str):
     order_service.change_order_state(id=id, trigger="SHIP")
     updated_order = order_service.get_order(id=id)
-    BaseResponse(
+    return BaseResponse(
         status="Success", message="Pesanan berhasil dikirim", data=updated_order
     )
 
@@ -354,8 +354,8 @@ def ship_order(id: str):
                             "id": "O61848",
                             "items": [{"item_id": "I42134", "quantity": 2}],
                             "status": "DELIVERED",
-                            "created_at": "2025-05-01T04:24:54.646025",
-                            "updated_at": "2025-05-01T04:25:56.024937",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:24:54",
                         },
                     }
                 }
@@ -382,6 +382,6 @@ def ship_order(id: str):
 def complete_order(id: str):
     order_service.change_order_state(id=id, trigger="DELIVER")
     updated_order = order_service.get_order(id=id)
-    BaseResponse(
+    return BaseResponse(
         status="Success", message="Pesanan berhasil diterima", data=updated_order
     )
