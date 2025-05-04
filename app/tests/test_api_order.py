@@ -126,11 +126,18 @@ def test_order_flow():
     assert response.json()["data"]["status"] == "DELIVERED"
     assert response.json()["data"]["status"] in [state.name for state in OrderState]
     
+    # Delete Order Test Data
     with open(file_path.ORDERS_PATH, "r") as f:
         data = json.load(f)
-    
     data.pop()
     data.pop()
-    
     with open(file_path.ORDERS_PATH, "w") as f:
         json.dump(data, f, indent=4)
+    
+    # Set Item Stock Back to Original
+    with open(file_path.ITEMS_PATH, "r") as f:
+        items = json.load(f)
+    items[0]["stock"] += 10
+    items[1]["stock"] += 10
+    with open(file_path.ITEMS_PATH, "w") as f:
+        json.dump(items, f, indent=4)
