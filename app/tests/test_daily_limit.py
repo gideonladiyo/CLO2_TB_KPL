@@ -3,7 +3,7 @@ from datetime import datetime
 
 def test_check_limit_order_pass():
     today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    check_limit_order([today, today], 5)  # tidak error berarti pass
+    check_limit_order([today, today], 5) 
 
 def test_check_limit_order_exceed():
     from fastapi import HTTPException

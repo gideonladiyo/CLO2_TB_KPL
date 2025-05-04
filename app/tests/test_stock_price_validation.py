@@ -8,7 +8,7 @@ class DummyItem:
 
 def test_validate_item_pass():
     item = DummyItem(price=100, stock=10)
-    validate_item(item)  # tidak error berarti pass
+    validate_item(item)
 
 def test_validate_item_fail():
     item = DummyItem(price=-1, stock=10)
