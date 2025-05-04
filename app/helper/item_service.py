@@ -65,6 +65,7 @@ class ItemService:
         self.items[idx]["price"] = item_updated.price
         self.items[idx]["stock"] = item_updated.stock
         self.save_items()
+        return self.items[idx]
 
     def delete_item(self, item_id: str):
         idx = self.find_item_idx(item_id=item_id)
