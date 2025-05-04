@@ -7,3 +7,6 @@ class Path:
     ORDERS_PATH = os.path.join(BASE_DIR, "data", "orders.json")
 
 file_path = Path()
+
+def get_base_path():
+    return Path.BASE_DIR

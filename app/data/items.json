@@ -3,13 +3,13 @@
         "item_id": "I93412",
         "name": "Laptop",
         "price": 1000000.0,
-        "stock": 165
+        "stock": 125
     },
     {
         "item_id": "I44514",
         "name": "Keyboard",
         "price": 350000.0,
-        "stock": 165
+        "stock": 125
     },
     {
         "item_id": "I42134",

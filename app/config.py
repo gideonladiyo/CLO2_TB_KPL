@@ -1,14 +1,14 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field
 
 class Settings(BaseSettings):
-    app_name: str
-    app_version: str
-    debug: bool
-    max_orders_per_day: int
-    maintenance_mode: bool
+    app_name: str = Field(..., env="APP_NAME")
+    app_version: str = Field(..., env="APP_VERSION")
+    debug: bool = Field(..., env="DEBUG")
+    max_orders_per_day: int = Field(..., env="MAX_ORDERS_PER_DAY")
+    maintenance_mode: bool = Field(..., env="MAINTENANCE_MODE")
+    
 
-    class Config:
-        model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env")
 
-# Inisialisasi settings
 settings = Settings()
