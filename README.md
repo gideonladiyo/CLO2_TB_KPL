@@ -11,6 +11,18 @@ cd CLO2_TB_KPL
 
 ---
 
+## 📁 Setup Proyek
+
+Buka terminal proyek, lalu jalankan command:
+
+```bash
+pip install -r requirements.txt
+```
+
+Seluruh library yang diperlukan di proyek ini akan dinstall terlebih dahulu.
+
+---
+
 ## 🚀 Menjalankan API
 
 Setelah masuk ke direktori proyek, jalankan perintah berikut untuk menjalankan API:
