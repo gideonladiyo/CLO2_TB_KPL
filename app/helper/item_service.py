@@ -27,7 +27,6 @@ class ItemService:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_items(self) -> List:
-        # print(self.items)
         return self.items
 
     def get_item(self, id: str) -> dict:

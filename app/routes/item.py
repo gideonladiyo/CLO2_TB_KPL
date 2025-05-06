@@ -38,7 +38,7 @@ router = APIRouter(prefix="/item", tags=["Item"])
         }
     },
 )
-def get_all_items():
+async def get_all_items():
     all_item = item_service.get_all_items()
     return BaseResponse(
         status="Success", message="Data barang berhasil diambil", data=all_item
@@ -69,7 +69,7 @@ def get_all_items():
         }
     },
 )
-def get_item_by_id(item_id: str):
+async def get_item_by_id(item_id: str):
     item = item_service.get_item(id=item_id)
     return BaseResponse(
         status="Success",
@@ -105,7 +105,7 @@ def get_item_by_id(item_id: str):
         400: {"description": "Stock tidak boleh negatif"},
     },
 )
-def add_item(item_create: ItemCreate):
+async def add_item(item_create: ItemCreate):
     new_item = item_service.create_item(item_create=item_create)
     return BaseResponse(
         status="Success", message="Barang berhasil ditambahkan", data=new_item
@@ -138,7 +138,7 @@ def add_item(item_create: ItemCreate):
         400: {"description": "Stock tidak boleh negatif"},
     },
 )
-def update_item(item_id: str, item_udpdated: ItemCreate):
+async def update_item(item_id: str, item_udpdated: ItemCreate):
     updated_item = item_service.update_item(item_id=item_id, item_updated=item_udpdated)
     return BaseResponse(
         status="Success", message="Data barang berhasil diubah", data=updated_item
@@ -162,5 +162,5 @@ def update_item(item_id: str, item_udpdated: ItemCreate):
         },
     },
 )
-def delete_item(item_id: str):
+async def delete_item(item_id: str):
     return item_service.delete_item(item_id=item_id)

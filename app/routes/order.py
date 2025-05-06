@@ -53,7 +53,7 @@ Gunakan endpoint ini untuk menampilkan semua riwayat atau daftar pesanan pelangg
         }
     },
 )
-def get_all_orders():
+async def get_all_orders():
     orders = order_service.get_all_orders()
     return BaseResponse(
         status="Success", message="Data pesanan berhasil diambil", data=orders
@@ -68,7 +68,7 @@ def get_all_orders():
     Mengambil data pesanan berdasarkan status pesanan yaitu NEW, PAID, CANCEL, SHIPPED, DELIVERED
     """,
 )
-def get_order_satistic(status: str):
+async def get_order_satistic(status: str):
     order_stats = order_service.get_order_stats(status=status)
     return BaseResponse(
         status="Success",
@@ -124,7 +124,7 @@ Contoh penggunaan:
         },
     },
 )
-def get_order_by_id(id: str):
+async def get_order_by_id(id: str):
     order = order_service.get_order(id)
     return BaseResponse(
         status="Success",
@@ -162,7 +162,7 @@ def get_order_by_id(id: str):
         }
     },
 )
-def create_order(order_create: OrderCreate):
+async def create_order(order_create: OrderCreate):
     new_order = order_service.create_order(order_create)
     return BaseResponse(
         status="Success", message="Pesanan berhasil dibuat", data=new_order
@@ -216,7 +216,7 @@ def create_order(order_create: OrderCreate):
         },
     },
 )
-def pay_order(id: str):
+async def pay_order(id: str):
     order_service.change_order_state(id=id, trigger="PAY")
     updated_order = order_service.get_order(id=id)
     return BaseResponse(
@@ -271,7 +271,7 @@ def pay_order(id: str):
         },
     },
 )
-def cancel_order(id: str):
+async def cancel_order(id: str):
     order_service.change_order_state(id=id, trigger="CANCEL")
     updated_order = order_service.get_order(id=id)
     return BaseResponse(
@@ -324,7 +324,7 @@ def cancel_order(id: str):
         },
     },
 )
-def ship_order(id: str):
+async def ship_order(id: str):
     order_service.change_order_state(id=id, trigger="SHIP")
     updated_order = order_service.get_order(id=id)
     return BaseResponse(
@@ -379,7 +379,7 @@ def ship_order(id: str):
         },
     },
 )
-def complete_order(id: str):
+async def complete_order(id: str):
     order_service.change_order_state(id=id, trigger="DELIVER")
     updated_order = order_service.get_order(id=id)
     return BaseResponse(
