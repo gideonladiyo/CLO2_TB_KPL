@@ -67,8 +67,8 @@ def test_create_failed():
     with open(file_path.ITEMS_PATH, "r") as f:
         item_data = json.load(f)
     items = [
-        {"item_id": item_data[0]["item_id"], "quantity": 10000},
-        {"item_id": item_data[1]["item_id"], "quantity": 10000},
+        {"item_id": item_data[2]["item_id"], "quantity": 10000},
+        {"item_id": item_data[3]["item_id"], "quantity": 10000},
     ]
     new_order = {"items": items}
     response = client.post("/order/", json=new_order)
