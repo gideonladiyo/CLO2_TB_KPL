@@ -77,11 +77,4 @@ class OrderService:
         order["updated_at"] = get_current_time_str()
         self.save_orders()
 
-    def get_order_stats(self, status: str):
-        if status.upper() not in [state.name for state in OrderState]:
-            raise HTTPException(status_code=400, detail="Input status tidak valid")
-        result = [order for order in self.orders if order["status"] == status.upper()]
-
-        return result
-
 order_service = OrderService()

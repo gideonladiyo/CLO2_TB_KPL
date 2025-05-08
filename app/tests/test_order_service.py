@@ -65,9 +65,3 @@ def test_change_order_state_success(temp_order_service, monkeypatch):
     updated_order = temp_order_service.get_order("O0001")
 
     assert updated_order["status"] == "PAID"
-
-
-def test_get_order_stats_invalid_status(temp_order_service):
-    with pytest.raises(HTTPException) as exc_info:
-        temp_order_service.get_order_stats("INVALID_STATUS")
-    assert exc_info.value.status_code == 400
