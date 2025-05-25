@@ -45,7 +45,7 @@ jobs:
   deploy-api:
     name: Deploy API to Production
     runs-on: ubuntu-latest
-    needs: test
+    # needs: test
 
     steps:
       - name: Checkout Repository
@@ -62,16 +62,16 @@ jobs:
             cd /home/CLO2_TB_KPL
 
             echo "📥 Menandai folder git sebagai aman"
-            sudo git config --global --add safe.directory /home/CLO2_TB_KPL
+            git config --global --add safe.directory /home/CLO2_TB_KPL
 
             echo "📥 Pulling latest changes..."
-            sudo git pull origin main
+            git pull origin main
 
             echo "🐳 Membuild dan menjalankan kontainer Docker"
-            sudo docker stop api-barang || true
-            sudo docker rm api-barang || true
-            sudo docker build -t api-barang .
-            sudo docker run -d \
+            docker stop api-barang || true
+            docker rm api-barang || true
+            docker build -t api-barang .
+            docker run -d \
             --name api-barang \
             --env-file .env \
             -v /home/CLO2_TB_KPL/data:/app/data \
