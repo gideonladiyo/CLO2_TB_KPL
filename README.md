@@ -41,10 +41,10 @@ uvicorn app.main:app --port 5151 --reload
 Untuk menjalankan unit test, jalankan perintah berikut dari root direktori proyek:
 
 ```bash
-pytest -p no:warning
+pytest -W ignore
 ```
 
-* Flag `-p no:warning` digunakan untuk menghilangkan warning output saat testing. Jika tidak menggunakan `-p no:warning` akan terlihat warning yang disebabkan oleh beberapa library yang digunakan.
+* Flag `-W ignore` digunakan untuk menghilangkan warning output saat testing. Jika tidak menggunakan `-W ignore` akan terlihat warning yang disebabkan oleh beberapa library yang digunakan.
 
 ---
 

@@ -6,8 +6,8 @@ export let options = {
     duration: '30s', // selama 30 detik
 };
 
-const BASE_URL_ITEM = 'http://127.0.0.1:5151/item';
-const BASE_URL_ORDER = 'http://127.0.0.1:5151/order';
+const BASE_URL_ITEM = 'http://40.79.241.106:5151/item';
+const BASE_URL_ORDER = 'http://40.79.241.106:5151/order';
 
 // Data dummy untuk POST dan PUT
 const dummyItem = {
