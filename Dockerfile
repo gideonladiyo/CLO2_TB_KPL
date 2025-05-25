@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5151
 
 # Perintah untuk menjalankan aplikasi menggunakan Uvicorn di port 5151
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5151"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5151"]
