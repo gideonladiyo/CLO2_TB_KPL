@@ -62,16 +62,16 @@ jobs:
             cd /home/CLO2_TB_KPL
 
             echo "📥 Menandai folder git sebagai aman"
-            git config --global --add safe.directory /home/CLO2_TB_KPL
+            sudo git config --global --add safe.directory /home/CLO2_TB_KPL
 
             echo "📥 Pulling latest changes..."
-            git pull origin main
+            sudo git pull origin main
 
             echo "🐳 Membuild dan menjalankan kontainer Docker"
-            docker stop api-barang || true
-            docker rm api-barang || true
-            docker build -t api-barang .
-            docker run -d \
+            sudo docker stop api-barang || true
+            sudo docker rm api-barang || true
+            sudo docker build -t api-barang .
+            sudo docker run -d \
             --name api-barang \
             --env-file .env \
             -v /home/CLO2_TB_KPL/data:/app/data \
