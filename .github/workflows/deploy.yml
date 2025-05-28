@@ -45,7 +45,7 @@ jobs:
   deploy-api:
     name: Deploy API to Production
     runs-on: ubuntu-latest
-    # needs: test
+    needs: test
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
