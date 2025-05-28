@@ -4,7 +4,7 @@ import json
 from fastapi import HTTPException
 from app.helper.order_service import OrderService
 from app.models import OrderCreate, OrderItemCreate
-from app.fsm.order_fsm import *
+from app.fsm.order_fsm import OrderState
 
 TEST_ORDER_PATH = "test_orders.json"
 

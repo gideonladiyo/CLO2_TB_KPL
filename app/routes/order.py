@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
 from app.helper.order_service import order_service
 from typing import List
-from app.models import *
+from app.models import BaseResponse, Order, OrderCreate
 
 router = APIRouter(prefix="/order", tags=["Order"])
 

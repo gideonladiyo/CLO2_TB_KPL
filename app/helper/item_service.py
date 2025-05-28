@@ -1,7 +1,7 @@
 from app.utils.file_path import file_path
 from app.utils.stock_price_validation import validate_item
 from app.utils.generate_id import generate_random_id
-from app.models import *
+from app.models import ItemCreate
 import json
 from fastapi import HTTPException
 from typing import List
@@ -16,14 +16,14 @@ class ItemService:
             with open(self.item_path, "r") as f:
                 data = json.load(f)
                 return data
-        except (json.JSONDecodeError, FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError, ValueError) as e:
             print(f"[Error] Failed to load data: {e}")
 
     def save_items(self):
         try:
             with open(self.item_path, "w") as f:
                 json.dump(self.items, f, indent=4)
-        except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
+        except (FileNotFoundError) as e:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_items(self) -> List:
@@ -59,7 +59,7 @@ class ItemService:
         validate_item(item=item_updated)
         idx = self.find_item_idx(item_id=item_id)
         if idx == -1:
-            raise HTTPException(status_code=404, detail="Item tidak ditemukan")
+            raise HTTPException(status_code=404)
         self.items[idx]["name"] = item_updated.name
         self.items[idx]["price"] = item_updated.price
         self.items[idx]["stock"] = item_updated.stock
@@ -69,7 +69,7 @@ class ItemService:
     def delete_item(self, item_id: str):
         idx = self.find_item_idx(item_id=item_id)
         if idx == -1:
-            raise HTTPException(status_code=404, detail="Item tidak ditemukan")
+            raise HTTPException(status_code=404)
         del self.items[idx]
         self.save_items()
         return {"message": f"Item dengan id {item_id} telah dihapus"}

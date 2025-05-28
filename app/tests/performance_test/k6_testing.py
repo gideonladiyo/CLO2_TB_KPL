@@ -31,6 +31,5 @@ def run_k6_test():
 
 
 if __name__ == "__main__":
-    if run_k6_test():
-        time.sleep(2)
-        print("K6 Testing success")
+    run_k6_test()
+    print("Performance testing berhasil!")

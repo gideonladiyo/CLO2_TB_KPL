@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
 from app.main import app
 from typing import List
-from app.models import *
+from datetime import datetime
 from app.utils.file_path import file_path
-from app.fsm.order_fsm import *
+from app.fsm.order_fsm import OrderState
 import json
 
 client = TestClient(app)

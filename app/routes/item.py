@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from app.helper.item_service import item_service
 from typing import List
-from app.models import *
+from app.models import BaseResponse, Item, ItemCreate
 
 router = APIRouter(prefix="/item", tags=["Item"])
 
@@ -102,7 +102,6 @@ async def get_item_by_id(item_id: str):
             },
         },
         400: {"description": "Harga tidak boleh negatif"},
-        400: {"description": "Stock tidak boleh negatif"},
     },
 )
 async def add_item(item_create: ItemCreate):
@@ -135,7 +134,6 @@ async def add_item(item_create: ItemCreate):
             },
         },
         400: {"description": "Harga tidak boleh negatif"},
-        400: {"description": "Stock tidak boleh negatif"},
     },
 )
 async def update_item(item_id: str, item_udpdated: ItemCreate):

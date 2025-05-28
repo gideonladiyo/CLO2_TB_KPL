@@ -1,5 +1,5 @@
 import os
-from app.utils.file_path import *
+from app.utils.file_path import Path
 
 
 class TestPath:

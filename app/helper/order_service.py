@@ -1,6 +1,6 @@
 from app.utils.file_path import file_path
-from app.fsm.order_fsm import *
-from app.models import *
+from app.fsm.order_fsm import change_order_state
+from app.models import OrderCreate
 from typing import List
 import json
 from fastapi import HTTPException
@@ -20,14 +20,14 @@ class OrderService:
             with open(self.order_path, "r") as f:
                 data = json.load(f)
                 return data
-        except (json.JSONDecodeError, FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError) as e:
             print(f"[Error] Failed to load data: {e}")
 
     def save_orders(self):
         try:
             with open(self.order_path, "w") as f:
                 json.dump(self.orders, f, indent=4)
-        except (PermissionError, TypeError, OSError, json.JSONDecodeError) as e:
+        except (FileNotFoundError) as e:
             print(f"[Error] Failed to save data: {e}")
 
     def get_all_orders(self) -> List:
@@ -37,7 +37,7 @@ class OrderService:
         for order in self.orders:
             if order["id"] == id:
                 return order
-        raise HTTPException(status_code=404, detail="Pesanan tidak ditemukan")
+        raise HTTPException(status_code=404)
 
     def create_order(self, order_create: OrderCreate):
         if len(order_create.items) == 0:
