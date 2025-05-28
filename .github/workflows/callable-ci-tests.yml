@@ -8,10 +8,10 @@ on:
       SONAR_HOST:
         required: true
 
-outputs:
-  ci_result:
-    description: "Result of the CI process"
-    value: ${{ jobs.sonarqube-scan.result }}
+    outputs:
+      ci_result:
+        description: "Result of the CI process"
+        value: ${{ jobs.sonarqube-scan.result }}
 
 jobs:
   test:
