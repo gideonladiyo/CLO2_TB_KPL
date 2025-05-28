@@ -9,9 +9,47 @@ on:
       - main
 
 jobs:
+  sonarqube-scan:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Download SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonar-scanner-cli-5.0.1.3006-linux.zip
+          sudo mv sonar-scanner-*/ /opt/sonar-scanner
+          echo "SONAR_SCANNER_HOME=/opt/sonar-scanner" >> $GITHUB_ENV
+          echo "/opt/sonar-scanner/bin" >> $GITHUB_PATH
+
+      - name: Run SonarScanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=api-barang \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://${{ secrets.SONAR_HOST }} \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.python.version=3.11 \
+            -Dsonar.sourceEncoding=UTF-8
+
   test:
     name: Test API
     runs-on: ubuntu-latest
+    needs: sonarqube-scan
 
     steps:
       - name: Checkout Repository
