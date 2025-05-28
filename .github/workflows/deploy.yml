@@ -76,5 +76,5 @@ jobs:
             -v /home/CLO2_TB_KPL/data:/app/data \
             -p 5151:5151 \
             api-barang
-
+            
             echo "🚀 API berhasil dideploy"
