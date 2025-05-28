@@ -1,0 +1,79 @@
+name: Callable Deploy API
+
+on:
+  workflow_call:
+    secrets:
+      SERVER_HOST:
+        required: true
+      SERVER_USER:
+        required: true
+      SERVER_PASSWORD:
+        required: true
+
+jobs:
+  deploy-api:
+    name: Deploy API to Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            echo "✅ Terhubung ke server"
+            if [ ! -d "/home/CLO2_TB_KPL" ]; then
+              echo "📂 Direktori /home/CLO2_TB_KPL tidak ditemukan, membuat direktori..."
+              mkdir -p /home/CLO2_TB_KPL
+            fi
+            cd /home/CLO2_TB_KPL
+            echo "PWD: $(pwd)"
+
+            echo "🔒 Menandai folder git sebagai aman (jika belum)"
+            if ! git config --global --get safe.directory | grep -q "/home/CLO2_TB_KPL"; then
+              git config --global --add safe.directory /home/CLO2_TB_KPL
+            fi
+            
+            # Inisialisasi repo jika belum ada atau clone
+            if [ ! -d ".git" ]; then
+              echo "Cloning repository..."
+              git clone https://github.com/${{ github.repository }}.git .
+              git checkout main # Pastikan di branch main
+            else
+              echo "📥 Pulling latest changes from main..."
+              git fetch origin
+              git reset --hard origin/main # Pastikan sinkron dengan remote main
+              git pull origin main
+            fi
+
+            echo "🐳 Membangun dan menjalankan kontainer Docker"
+
+            if [ "$(docker ps -q -f name=api-barang)" ]; then
+                echo "Stopping existing api-barang container..."
+                docker stop api-barang
+            fi
+            if [ "$(docker ps -aq -f name=api-barang)" ]; then
+                echo "Removing existing api-barang container..."
+                docker rm api-barang
+            fi
+
+            echo "Building new Docker image: api-barang"
+            docker build -t api-barang .
+            
+            echo "Running new Docker container: api-barang"
+            docker run -d \
+              --name api-barang \
+              --env-file .env \
+              -v /home/CLO2_TB_KPL/data:/app/data \
+              -p 5151:5151 \
+              --restart unless-stopped \
+              api-barang
+            
+            echo "🚀 API berhasil dideploy"
+            echo "Listing running containers:"
+            docker ps -f name=api-barang

@@ -1,0 +1,25 @@
+name: Main CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Job untuk testing dan continuous inspection
+  ci_process:
+    name: Run CI Checks
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    uses: ./.github/workflows/callable-ci-tests.yml 
+    secrets: inherit
+
+  # Job untuk menjalankan deployment
+  deploy_production:
+    name: Deploy to Production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.ci_process.result == 'success'
+    needs: ci_process
+    uses: ./.github/workflows/callable-deploy.yml
+    secrets: inherit
