@@ -27,12 +27,11 @@ jobs:
           port: 22
           script: |
             echo "✅ Terhubung ke server"
-            if [ ! -d "/home/CLO2_TB_KPL" ]; then
-              echo "📂 Direktori /home/CLO2_TB_KPL tidak ditemukan, membuat direktori..."
-              sudo mkdir -p /home/CLO2_TB_KPL
-              sudo chown $USER:$USER /home/CLO2_TB_KPL
+            if [ ! -d "/home/gideonladiyo/CLO2_TB_KPL" ]; then
+              echo "📂 Direktori /home/gideonladiyo/CLO2_TB_KPL tidak ditemukan, membuat direktori..."
+              mkdir -p /home/gideonladiyo/CLO2_TB_KPL
             fi
-            cd /home/CLO2_TB_KPL
+            cd /home/gideonladiyo/CLO2_TB_KPL
             echo "PWD: $(pwd)"
 
             echo "🔒 Menandai folder git sebagai aman (jika belum)"
@@ -56,18 +55,18 @@ jobs:
 
             if [ "$(docker ps -q -f name=api-barang)" ]; then
                 echo "Stopping existing api-barang container..."
-                sudo docker stop api-barang
+                docker stop api-barang
             fi
             if [ "$(docker ps -aq -f name=api-barang)" ]; then
                 echo "Removing existing api-barang container..."
-                sudo docker rm api-barang
+                docker rm api-barang
             fi
 
             echo "Building new Docker image: api-barang"
-            sudo docker build -t api-barang .
+            docker build -t api-barang .
             
             echo "Running new Docker container: api-barang"
-            sudo docker run -d \
+            docker run -d \
               --name api-barang \
               --env-file .env \
               -v /home/CLO2_TB_KPL/data:/app/data \
@@ -77,4 +76,4 @@ jobs:
             
             echo "🚀 API berhasil dideploy"
             echo "Listing running containers:"
-            sudo docker ps -f name=api-barang
+            docker ps -f name=api-barang
