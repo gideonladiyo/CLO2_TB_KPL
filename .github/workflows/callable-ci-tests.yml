@@ -87,13 +87,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sonar-scanner \
-            -Dsonar.projectKey=api-barang \
+            -Dsonar.projectKey=gideon \
             -Dsonar.sources=. \
             -Dsonar.host.url=http://${{ secrets.SONAR_HOST }} \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.python.version=3.11 \
-            -Dsonar.sourceEncoding=UTF-8 \
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }} \
-            -Dsonar.scm.revision=${{ github.sha }}
+            -Dsonar.sourceEncoding=UTF-8
