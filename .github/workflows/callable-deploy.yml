@@ -29,7 +29,8 @@ jobs:
             echo "✅ Terhubung ke server"
             if [ ! -d "/home/CLO2_TB_KPL" ]; then
               echo "📂 Direktori /home/CLO2_TB_KPL tidak ditemukan, membuat direktori..."
-              mkdir -p /home/CLO2_TB_KPL
+              sudo mkdir -p /home/CLO2_TB_KPL
+              sudo chown $USER:$USER /home/CLO2_TB_KPL
             fi
             cd /home/CLO2_TB_KPL
             echo "PWD: $(pwd)"
@@ -55,18 +56,18 @@ jobs:
 
             if [ "$(docker ps -q -f name=api-barang)" ]; then
                 echo "Stopping existing api-barang container..."
-                docker stop api-barang
+                sudo docker stop api-barang
             fi
             if [ "$(docker ps -aq -f name=api-barang)" ]; then
                 echo "Removing existing api-barang container..."
-                docker rm api-barang
+                sudo docker rm api-barang
             fi
 
             echo "Building new Docker image: api-barang"
-            docker build -t api-barang .
+            sudo docker build -t api-barang .
             
             echo "Running new Docker container: api-barang"
-            docker run -d \
+            sudo docker run -d \
               --name api-barang \
               --env-file .env \
               -v /home/CLO2_TB_KPL/data:/app/data \
@@ -76,4 +77,4 @@ jobs:
             
             echo "🚀 API berhasil dideploy"
             echo "Listing running containers:"
-            docker ps -f name=api-barang
+            sudo docker ps -f name=api-barang
