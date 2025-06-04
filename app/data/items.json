@@ -1,11 +1,5 @@
 [
     {
-        "item_id": "I93412",
-        "name": "Laptop",
-        "price": 1000000.0,
-        "stock": 9223372036854753563
-    },
-    {
         "item_id": "I44514",
         "name": "Keyboard",
         "price": 350000.0,
@@ -82,5 +76,11 @@
         "name": "Botol",
         "price": 10000.0,
         "stock": 50
+    },
+    {
+        "item_id": "I85382",
+        "name": "tes",
+        "price": 1.0,
+        "stock": 1
     }
 ]

@@ -2,9 +2,11 @@ from fastapi import APIRouter
 from app.helper.item_service import item_service
 from typing import List
 from app.models import BaseResponse, Item, ItemCreate
+from app.commands.item_command import GetItemCommand, GetItemsCommand, CreateItemCommand, UpdateItemCommand, DeleteItemCommand
+from app.handlers.command_handler import CommandHandler
 
 router = APIRouter(prefix="/item", tags=["Item"])
-
+handler = CommandHandler()
 
 @router.get(
     "/",
@@ -39,7 +41,8 @@ router = APIRouter(prefix="/item", tags=["Item"])
     },
 )
 async def get_all_items():
-    all_item = item_service.get_all_items()
+    command = GetItemsCommand()
+    all_item = handler.run(command)
     return BaseResponse(
         status="Success", message="Data barang berhasil diambil", data=all_item
     )
@@ -70,7 +73,8 @@ async def get_all_items():
     },
 )
 async def get_item_by_id(item_id: str):
-    item = item_service.get_item(id=item_id)
+    command = GetItemCommand(item_id)
+    item = handler.run(command)
     return BaseResponse(
         status="Success",
         message="Data barang berdasarkan ID berhasil diambil",
@@ -105,11 +109,11 @@ async def get_item_by_id(item_id: str):
     },
 )
 async def add_item(item_create: ItemCreate):
-    new_item = item_service.create_item(item_create=item_create)
+    command = CreateItemCommand(item_create)
+    new_item = handler.run(command)
     return BaseResponse(
         status="Success", message="Barang berhasil ditambahkan", data=new_item
     )
-
 
 @router.put(
     "/{item_id}",
@@ -136,8 +140,9 @@ async def add_item(item_create: ItemCreate):
         400: {"description": "Harga tidak boleh negatif"},
     },
 )
-async def update_item(item_id: str, item_udpdated: ItemCreate):
-    updated_item = item_service.update_item(item_id=item_id, item_updated=item_udpdated)
+async def update_item(item_id: str, item_updated: ItemCreate):
+    command = UpdateItemCommand(item_id, item_updated)
+    updated_item = handler.run(command)
     return BaseResponse(
         status="Success", message="Data barang berhasil diubah", data=updated_item
     )
@@ -161,4 +166,5 @@ async def update_item(item_id: str, item_udpdated: ItemCreate):
     },
 )
 async def delete_item(item_id: str):
-    return item_service.delete_item(item_id=item_id)
+    command = DeleteItemCommand(item_id)
+    return handler.run(command)
