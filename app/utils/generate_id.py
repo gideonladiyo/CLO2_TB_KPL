@@ -1,8 +1,10 @@
-from typing import List
-import random
+import secrets
 
-def generate_random_id(ids: List, startswith: str, digit_number: int) -> str:
-    new_id = startswith + str(random.randint(0, 99999)).zfill(digit_number)
-    if new_id in ids:
-        return generate_random_id(ids=ids, startswith=startswith, digit_number=digit_number)
+
+def generate_random_id(ids: list, startswith: str, digit_number: int) -> str:
+    new_id = startswith + str(secrets.randbelow(10**digit_number)).zfill(digit_number)
+    while new_id in ids:
+        new_id = startswith + str(secrets.randbelow(10**digit_number)).zfill(
+            digit_number
+        )
     return new_id
