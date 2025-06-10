@@ -1,9 +1,10 @@
 from fastapi.testclient import TestClient
 from app.main import app
-from app.utils.file_path import file_path
+from app.utils.file_path import get_path_instance
 import json
 
 client = TestClient(app)
+BASE_PATH = get_path_instance()
 
 def test_get_items():
     response = client.get("/item/")
@@ -17,7 +18,7 @@ def test_get_items():
         assert item["stock"] > 0
 
 def test_get_item():
-    with open(file_path.ITEMS_PATH, "r") as f:
+    with open(BASE_PATH.ITEMS_PATH, "r") as f:
         data = json.load(f)
     item_id = data[0]["item_id"]
     response = client.get(f"/item/{item_id}")

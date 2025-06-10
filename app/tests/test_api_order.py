@@ -2,12 +2,12 @@ from fastapi.testclient import TestClient
 from app.main import app
 from typing import List
 from datetime import datetime
-from app.utils.file_path import file_path
+from app.utils.file_path import get_path_instance
 from app.fsm.order_fsm import OrderState
 import json
 
 client = TestClient(app)
-
+BASE_PATH = get_path_instance()
 
 def test_get_orders():
     response = client.get("/order/")
@@ -28,7 +28,7 @@ def test_get_orders():
 
 
 def test_get_order():
-    with open(file_path.ORDERS_PATH, "r") as f:
+    with open(BASE_PATH.ORDERS_PATH, "r") as f:
         data = json.load(f)
     order_id = data[0]["id"]
     response = client.get(f"/order/{order_id}")
@@ -46,7 +46,7 @@ def test_get_not_found():
 
 
 def test_create_order():
-    with open(file_path.ITEMS_PATH, "r") as f:
+    with open(BASE_PATH.ITEMS_PATH, "r") as f:
         item_data = json.load(f)
     items = [
         {"item_id": item_data[0]["item_id"], "quantity": 5},
@@ -64,7 +64,7 @@ def test_create_order():
     assert datetime.fromisoformat(data["updated_at"])
 
 def test_create_failed():
-    with open(file_path.ITEMS_PATH, "r") as f:
+    with open(BASE_PATH.ITEMS_PATH, "r") as f:
         item_data = json.load(f)
     items = [
         {"item_id": item_data[2]["item_id"], "quantity": 10000},
@@ -78,7 +78,7 @@ def test_create_failed():
     assert response.status_code == 400
 
 def test_order_flow():
-    with open(file_path.ORDERS_PATH, "r") as f:
+    with open(BASE_PATH.ORDERS_PATH, "r") as f:
         order_data = json.load(f)
     last_order = order_data[-1]
     print(last_order)
@@ -94,7 +94,7 @@ def test_order_flow():
     assert response.status_code == 422
 
     # buat order baru
-    with open(file_path.ITEMS_PATH, "r") as f:
+    with open(BASE_PATH.ITEMS_PATH, "r") as f:
         item_data = json.load(f)
     items = [
         {"item_id": item_data[0]["item_id"], "quantity": 5},
@@ -106,7 +106,7 @@ def test_order_flow():
     assert response.status_code == 201
 
     # pay
-    with open(file_path.ORDERS_PATH, "r") as f:
+    with open(BASE_PATH.ORDERS_PATH, "r") as f:
         order_data = json.load(f)
     last_order = order_data[-1]
     response = client.post(f"/order/{last_order['id']}/pay")
@@ -127,17 +127,17 @@ def test_order_flow():
     assert response.json()["data"]["status"] in [state.name for state in OrderState]
     
     # Delete Order Test Data
-    with open(file_path.ORDERS_PATH, "r") as f:
+    with open(BASE_PATH.ORDERS_PATH, "r") as f:
         data = json.load(f)
     data.pop()
     data.pop()
-    with open(file_path.ORDERS_PATH, "w") as f:
+    with open(BASE_PATH.ORDERS_PATH, "w") as f:
         json.dump(data, f, indent=4)
     
     # Set Item Stock Back to Original
-    with open(file_path.ITEMS_PATH, "r") as f:
+    with open(BASE_PATH.ITEMS_PATH, "r") as f:
         items = json.load(f)
     items[0]["stock"] += 10
     items[1]["stock"] += 10
-    with open(file_path.ITEMS_PATH, "w") as f:
+    with open(BASE_PATH.ITEMS_PATH, "w") as f:
         json.dump(items, f, indent=4)

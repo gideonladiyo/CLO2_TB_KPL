@@ -1,4 +1,4 @@
-from app.utils.file_path import file_path
+from app.utils.file_path import get_path_instance
 from app.utils.stock_price_validation import validate_item
 from app.utils.generate_id import generate_random_id
 from app.models import ItemCreate
@@ -6,9 +6,11 @@ import json
 from fastapi import HTTPException
 from typing import List
 
+BASE_PATH = get_path_instance()
+
 class ItemService:
     def __init__(self):
-        self.item_path = file_path.ITEMS_PATH
+        self.item_path = BASE_PATH.ITEMS_PATH
         self.items = self.load_items()
 
     def load_items(self) -> List:

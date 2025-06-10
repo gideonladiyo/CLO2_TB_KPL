@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from app.helper.item_service import ItemService
 from app.models import ItemCreate
 from unittest.mock import patch
+from app.utils.file_path import get_path_instance
 
 TEST_ITEM_PATH = "test_items.json"
 
@@ -18,7 +19,8 @@ def temp_item_service(monkeypatch):
     with open(TEST_ITEM_PATH, "w") as f:
         json.dump(dummy_items, f)
 
-    monkeypatch.setattr("app.helper.item_service.file_path.ITEMS_PATH", TEST_ITEM_PATH)
+    path_instance = get_path_instance()
+    monkeypatch.setattr(path_instance, "ITEMS_PATH", TEST_ITEM_PATH)
     service = ItemService()
     yield service
 

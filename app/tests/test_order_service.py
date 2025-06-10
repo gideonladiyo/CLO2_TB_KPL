@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from app.helper.order_service import OrderService
 from app.models import OrderCreate, OrderItemCreate
 from app.fsm.order_fsm import OrderState
+from app.utils.file_path import get_path_instance
 
 TEST_ORDER_PATH = "test_orders.json"
 
@@ -15,9 +16,8 @@ def temp_order_service(monkeypatch):
     with open(TEST_ORDER_PATH, "w") as f:
         json.dump(dummy_orders, f)
 
-    monkeypatch.setattr(
-        "app.helper.order_service.file_path.ORDERS_PATH", TEST_ORDER_PATH
-    )
+    path_instance = get_path_instance()
+    monkeypatch.setattr(path_instance, "ITEMS_PATH", TEST_ORDER_PATH)
     service = OrderService()
     yield service
 

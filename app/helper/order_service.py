@@ -1,4 +1,4 @@
-from app.utils.file_path import file_path
+from app.utils.file_path import get_path_instance
 from app.fsm.order_fsm import change_order_state
 from app.models import OrderCreate
 from typing import List
@@ -10,9 +10,11 @@ from app.utils.daily_limit import check_limit_order
 from app.utils.current_time import get_current_time_str
 from app.config import settings
 
+BASE_PATH = get_path_instance()
+
 class OrderService:
     def __init__(self):
-        self.order_path = file_path.ORDERS_PATH
+        self.order_path = BASE_PATH.ORDERS_PATH
         self.orders = self.load_orders()
 
     def load_orders(self) -> List:
