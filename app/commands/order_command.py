@@ -13,13 +13,6 @@ class GetOrderByIdCommand(Command):
     def execute(self):
         return order_service.get_order(self.order_id)
 
-class GetOrdersByStatusCommand(Command):
-    def __init__(self, status: str):
-        self.status = status
-
-    def execute(self):
-        return order_service.get_order_stats(self.status)
-
 class CreateOrderCommand(Command):
     def __init__(self, order_data: OrderCreate):
         self.order_data = order_data

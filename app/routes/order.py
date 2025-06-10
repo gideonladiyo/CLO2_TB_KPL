@@ -1,14 +1,9 @@
-from fastapi import APIRouter, Path, Query
+from fastapi import APIRouter, Query
+from app.helper.order_service import order_service
 from typing import List
 from app.models import BaseResponse, Order, OrderCreate
 from app.handlers.command_handler import CommandHandler
-from app.commands.order_command import (
-    GetAllOrdersCommand,
-    GetOrderByIdCommand,
-    GetOrdersByStatusCommand,
-    CreateOrderCommand,
-    ChangeOrderStatusCommand,
-)
+from app.commands.order_command import GetAllOrdersCommand, GetOrderByIdCommand, CreateOrderCommand, ChangeOrderStatusCommand
 
 router = APIRouter(prefix="/order", tags=["Order"])
 handler = CommandHandler()
@@ -16,73 +11,364 @@ handler = CommandHandler()
 @router.get(
     "/",
     response_model=BaseResponse[List[Order]],
-    summary="Ambil semua order"
+    summary="Ambil daftar semua pesanan",
+    description="""
+Endpoint ini digunakan untuk mengambil seluruh data pesanan yang tersedia di sistem.
+Pesanan yang dikembalikan berisi informasi seperti:
+- ID pesanan
+- Daftar item yang dipesan
+- Status pesanan saat ini (contoh: NEW, PAID, SHIPPED, DELIVERED)
+- Waktu pembuatan dan pembaruan terakhir
+
+Gunakan endpoint ini untuk menampilkan semua riwayat atau daftar pesanan pelanggan.
+""",
+    responses={
+        200: {
+            "description": "Daftar pesanan berhasil diambil",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Data pesanan berhasil diambil",
+                        "data": [
+                            {
+                                "id": "O51353",
+                                "items": [
+                                    {"item_id": "I23456", "quantity": 2},
+                                    {"item_id": "I34567", "quantity": 1},
+                                ],
+                                "status": "NEW",
+                                "created_at": "2025-04-28 10:15:00",
+                                "updated_at": "2025-04-28 10:15:00",
+                            },
+                            {
+                                "id": "O51354",
+                                "items": [{"item_id": "I45678", "quantity": 3}],
+                                "status": "PAID",
+                                "created_at": "2025-04-28 11:30:22",
+                                "updated_at": "2025-04-28 12:05:17",
+                            },
+                        ],
+                    }
+                }
+            },
+        }
+    },
 )
 async def get_all_orders():
     command = GetAllOrdersCommand()
     orders = handler.run(command)
     return BaseResponse(
-        status="Success",
-        message="Semua data pesanan berhasil diambil",
-        data=orders,
+        status="Success", message="Data pesanan berhasil diambil", data=orders
     )
 
 @router.get(
-    "/{order_id}",
+    "/{id}",
     response_model=BaseResponse[Order],
-    summary="Ambil detail order berdasarkan ID"
+    summary="Ambil detail pesanan berdasarkan ID",
+    description="""
+Endpoint ini digunakan untuk mengambil informasi lengkap dari satu pesanan berdasarkan ID yang diberikan.
+Data yang dikembalikan mencakup:
+- ID pesanan
+- Daftar item dan jumlah yang dipesan
+- Status saat ini (contoh: NEW, PAID, SHIPPED, DELIVERED)
+- Waktu dibuat dan diperbarui terakhir
+
+Contoh penggunaan:
+`GET /order/O51354`
+""",
+    responses={
+        200: {
+            "description": "Detail pesanan berhasil ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Data pesanan berdasarkan ID berhasil diambil",
+                        "data": {
+                            "id": "O51353",
+                            "items": [
+                                {"item_id": "I23456", "quantity": 2},
+                                {"item_id": "I34567", "quantity": 1},
+                            ],
+                            "status": "NEW",
+                            "created_at": "2025-04-28 10:15:00",
+                            "updated_at": "2025-04-28 10:15:00",
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Pesanan tidak ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Pesanan dengan ID tersebut tidak ditemukan"}
+                }
+            },
+        },
+    },
 )
-async def get_order_by_id(order_id: str = Path(..., description="ID dari order")):
-    command = GetOrderByIdCommand(order_id)
+async def get_order_by_id(id: str):
+    command = GetOrderByIdCommand(id)
     order = handler.run(command)
     return BaseResponse(
         status="Success",
-        message="Data pesanan berhasil diambil",
+        message="Data pesanan berdasarkan ID berhasil diambil",
         data=order,
     )
 
-@router.get(
-    "/status/",
-    response_model=BaseResponse[List[Order]],
-    summary="Ambil order berdasarkan status"
-)
-async def get_orders_by_status(status: str = Query(..., description="Status order seperti 'pending', 'completed'")):
-    command = GetOrdersByStatusCommand(status)
-    orders = handler.run(command)
-    return BaseResponse(
-        status="Success",
-        message=f"Data pesanan dengan status '{status}' berhasil diambil",
-        data=orders,
-    )
 
 @router.post(
     "/",
     response_model=BaseResponse[Order],
+    summary="Buat pesanan baru",
+    description="""
+    Membuat pesanan dengan daftar item dan jumlah masing-masing.
+    """,
     status_code=201,
-    summary="Buat pesanan baru"
+    responses={
+        201: {
+            "description": "Pesanan berhasil dibuat",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibuat",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "NEW",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:24:54",
+                        },
+                    }
+                }
+            },
+        }
+    },
 )
-async def create_order(order_data: OrderCreate):
-    command = CreateOrderCommand(order_data)
+async def create_order(order_create: OrderCreate):
+    command = CreateOrderCommand(order_create)
     new_order = handler.run(command)
     return BaseResponse(
-        status="Success",
-        message="Pesanan berhasil dibuat",
-        data=new_order,
+        status="Success", message="Pesanan berhasil dibuat", data=new_order
     )
 
-@router.put(
-    "/{order_id}/status",
+
+@router.post(
+    "/{id}/pay",
     response_model=BaseResponse[Order],
-    summary="Ubah status order berdasarkan trigger"
+    summary="Mengubah status pesanan menjadi PAID",
+    description="""
+    Melakukan pembayaran terhadap pesanan dengan ID tertentu.
+
+    Hanya pesanan dengan status `NEW` yang dapat dibatalkan. Jika status saat ini tidak memungkinkan transisi ke `CANCELED`, maka akan menghasilkan kesalahan 422.
+    """,
+    status_code=201,
+    responses={
+        201: {
+            "description": "Pesanan berhasil dibayar",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "PAID",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:25:56",
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Pesanan tidak ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Order with id 'O12345' not found"}
+                }
+            },
+        },
+        422: {
+            "description": "Transisi status tidak valid",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Invalid transition from PAID using PAY"}
+                }
+            },
+        },
+    },
 )
-async def change_order_status(
-    order_id: str = Path(..., description="ID pesanan"),
-    trigger: str = Query(..., description="Trigger status baru (e.g., 'process', 'complete')"),
-):
-    command = ChangeOrderStatusCommand(order_id, trigger)
+async def pay_order(id: str):
+    command = ChangeOrderStatusCommand(id, "PAY")
     updated_order = handler.run(command)
     return BaseResponse(
-        status="Success",
-        message="Status pesanan berhasil diubah",
-        data=updated_order,
+        status="Success", message="Pesanan berhasil dibayar", data=updated_order
+    )
+
+
+@router.post(
+    "/{id}/cancel",
+    response_model=BaseResponse[Order],
+    summary="Mengubah status pesanan menjadi CANCEL",
+    description="""
+    Melakukan pembayaran terhadap pesanan dengan ID tertentu.
+
+    Hanya pesanan dengan status `NEW` yang dapat dibayar. Jika status saat ini tidak memungkinkan transisi ke `PAID`, maka akan menghasilkan kesalahan 422.
+    """,
+    status_code=201,
+    responses={
+        201: {
+            "description": "Pesanan berhasil dibatalkan",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "CANCEL",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:25:56",
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Pesanan tidak ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Order with id 'O12345' not found"}
+                }
+            },
+        },
+        422: {
+            "description": "Transisi status tidak valid",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Invalid transition from PAID using CANCEL"}
+                }
+            },
+        },
+    },
+)
+async def cancel_order(id: str):
+    command = ChangeOrderStatusCommand(id, "CANCEL")
+    updated_order = handler.run(command)
+    return BaseResponse(
+        status="Success", message="Pesanan berhasil dibatalkan", data=updated_order
+    )
+
+
+@router.post(
+    "/{id}/ship",
+    response_model=BaseResponse[Order],
+    summary="Mengubah status pesanan menjadi SHIPPED",
+    description="""
+    Melakukan pembayaran terhadap pesanan dengan ID tertentu.
+
+    Hanya pesanan dengan status `PAID` yang dapat dikirim. Jika status saat ini tidak memungkinkan transisi ke `SHIPPED`, maka akan menghasilkan kesalahan 422.
+    """,
+    status_code=201,
+    responses={
+        201: {
+            "description": "Pesanan berhasil dikirim",
+            "content": {
+                "application/json": {
+                    "status": "Success",
+                    "message": "Pesanan berhasil dibayar",
+                    "data": {
+                        "id": "O61848",
+                        "items": [{"item_id": "I42134", "quantity": 2}],
+                        "status": "SHIPPED",
+                        "created_at": "2025-05-01 04:24:54",
+                        "updated_at": "2025-05-01 04:24:54",
+                    },
+                }
+            },
+        },
+        404: {
+            "description": "Pesanan tidak ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Order with id 'O12345' not found"}
+                }
+            },
+        },
+        422: {
+            "description": "Transisi status tidak valid",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Invalid transition from NEW using SHIP"}
+                }
+            },
+        },
+    },
+)
+async def ship_order(id: str):
+    command = ChangeOrderStatusCommand(id, "SHIP")
+    updated_order = handler.run(command)
+    return BaseResponse(
+        status="Success", message="Pesanan berhasil dikirim", data=updated_order
+    )
+
+
+@router.post(
+    "/{id}/complete",
+    response_model=BaseResponse[Order],
+    summary="Mengubah status pesanan menjadi DELIVERED",
+    description="""
+    Melakukan pembayaran terhadap pesanan dengan ID tertentu.
+
+    Hanya pesanan dengan status `PAID` yang dapat diselesaikan. Jika status saat ini tidak memungkinkan transisi ke `DELIVERED`, maka akan menghasilkan kesalahan 422.
+    """,
+    status_code=201,
+    responses={
+        201: {
+            "description": "Pesanan berhasil diterima",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "Success",
+                        "message": "Pesanan berhasil dibayar",
+                        "data": {
+                            "id": "O61848",
+                            "items": [{"item_id": "I42134", "quantity": 2}],
+                            "status": "DELIVERED",
+                            "created_at": "2025-05-01 04:24:54",
+                            "updated_at": "2025-05-01 04:24:54",
+                        },
+                    }
+                }
+            },
+        },
+        404: {
+            "description": "Pesanan tidak ditemukan",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Order with id 'O12345' not found"}
+                }
+            },
+        },
+        422: {
+            "description": "Transisi status tidak valid",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Invalid transition from PAID using COMPLETE"}
+                }
+            },
+        },
+    },
+)
+async def complete_order(id: str):
+    command = ChangeOrderStatusCommand(id, "DELIVER")
+    updated_order = handler.run(command)
+    return BaseResponse(
+        status="Success", message="Pesanan berhasil diterima", data=updated_order
     )

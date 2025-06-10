@@ -122,5 +122,17 @@
         "status": "PAID",
         "created_at": "2025-05-01 04:24:54",
         "updated_at": "2025-05-01 04:25:56"
+    },
+    {
+        "id": "O34656",
+        "items": [
+            {
+                "item_id": "I42134",
+                "quantity": 1
+            }
+        ],
+        "status": "DELIVERED",
+        "created_at": "2025-06-10 15:36:09",
+        "updated_at": "2025-06-10 15:39:25"
     }
 ]
